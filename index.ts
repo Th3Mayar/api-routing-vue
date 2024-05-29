@@ -2,8 +2,8 @@ import exp from "express";
 import cors from "cors";
 import { MongoClient, InsertOneResult, Document, WithId } from "mongodb";
 import dontev from "dotenv";
+import { Request, Response } from "express";
 
-dontev.config();
 const app = exp();
 
 app.use(exp.json());
@@ -15,7 +15,9 @@ app.get("/", (res: { json: (arg0: { message: string; }) => void; }) => {
   res.json({ message: "Hello from server!" });
 });
 
-app.get("/messages", async (res: { json: (arg0: WithId<Document>[]) => void; status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; }) => {
+app.get("/messages", async (req: Request, res: Response) => {});
+
+app.get("/messages", async (_req: Request, res: Response) => {
   try {
     const database = client.db("form-Data-vue");
     const collection = database.collection("messages");
