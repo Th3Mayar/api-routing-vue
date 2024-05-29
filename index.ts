@@ -1,7 +1,9 @@
 import exp from "express";
 import cors from "cors";
-import { MongoClient, InsertOneResult } from "mongodb";
+import { MongoClient, InsertOneResult, Document, WithId } from "mongodb";
+import dontev from "dotenv";
 
+dontev.config();
 const app = exp();
 
 app.use(exp.json());
@@ -9,11 +11,11 @@ app.use(cors());
 
 const PORT = process.env.PORT || 3000; 
 
-app.get("/", (req, res) => {
+app.get("/", (res: { json: (arg0: { message: string; }) => void; }) => {
   res.json({ message: "Hello from server!" });
 });
 
-app.get("/messages", async (req, res) => {
+app.get("/messages", async (res: { json: (arg0: WithId<Document>[]) => void; status: (arg0: number) => { (): any; new(): any; json: { (arg0: { message: string; }): void; new(): any; }; }; }) => {
   try {
     const database = client.db("form-Data-vue");
     const collection = database.collection("messages");
@@ -43,6 +45,8 @@ async function connectToMongoDB() {
 
 connectToMongoDB();
 
+app.use(exp.urlencoded({ extended: true }));
+
 app.post("/messages", async (req, res) => {
   const { email, message } = req.body;
   console.log(
@@ -61,7 +65,7 @@ app.post("/messages", async (req, res) => {
 
     res.json({
       message: "Data received and saved successfully",
-      data: insertResult.insertedId[0], 
+      data: insertResult.insertedId,
     });
   } catch (error) {
     console.error("Error inserting document into MongoDB:", error);
