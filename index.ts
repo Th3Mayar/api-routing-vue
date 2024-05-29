@@ -1,21 +1,20 @@
-import exp from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
-import { MongoClient, InsertOneResult, Document, WithId } from "mongodb";
-import dontev from "dotenv";
-import { Request, Response } from "express";
+import { MongoClient, InsertOneResult } from "mongodb";
+import dotenv from "dotenv";
 
-const app = exp();
+dotenv.config();
 
-app.use(exp.json());
+const app = express();
+
+app.use(express.json());
 app.use(cors());
 
-const PORT = process.env.PORT || 3000; 
+const PORT = process.env.PORT || 3000;
 
-app.get("/", (res: { json: (arg0: { message: string; }) => void; }) => {
+app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Hello from server!" });
 });
-
-app.get("/messages", async (req: Request, res: Response) => {});
 
 app.get("/messages", async (_req: Request, res: Response) => {
   try {
@@ -33,7 +32,10 @@ app.get("/messages", async (_req: Request, res: Response) => {
 
 const MONGODB_URL = process.env.MONGODB_URI || "";
 
-const client = new MongoClient(MONGODB_URL);
+const client = new MongoClient(MONGODB_URL, {
+  tlsAllowInvalidCertificates: true,  // Disable certificate validation for development
+  serverSelectionTimeoutMS: 50000,    // Increase server selection timeout
+});
 
 async function connectToMongoDB() {
   try {
@@ -47,13 +49,11 @@ async function connectToMongoDB() {
 
 connectToMongoDB();
 
-app.use(exp.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
-app.post("/messages", async (req, res) => {
+app.post("/messages", async (req: Request, res: Response) => {
   const { email, message } = req.body;
-  console.log(
-    `Received email: ${email}, message: ${message}`
-  );
+  console.log(`Received email: ${email}, message: ${message}`);
 
   try {
     const database = client.db("form-Data-vue");
