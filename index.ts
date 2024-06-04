@@ -3,6 +3,12 @@ import cors from "cors";
 import { MongoClient, InsertOneResult } from "mongodb";
 import dotenv from "dotenv";
 
+// Backend server code for the form-data-vue app using Express.js and MongoDB
+// The server listens on port 3000 and has two routes:
+// GET /messages: Returns all messages stored in the MongoDB database
+// POST /messages: Receives an email and message from the client, saves it to the MongoDB database, and returns a success message
+// The MongoDB connection string is read from the .env file
+
 dotenv.config();
 
 const app = express();
@@ -33,8 +39,8 @@ app.get("/messages", async (_req: Request, res: Response) => {
 const MONGODB_URL = process.env.MONGODB_URI || "";
 
 const client = new MongoClient(MONGODB_URL, {
-  tlsAllowInvalidCertificates: true,  // Disable certificate validation for development
-  serverSelectionTimeoutMS: 50000,    // Increase server selection timeout
+  tlsAllowInvalidCertificates: true, 
+  serverSelectionTimeoutMS: 50000,  
 });
 
 async function connectToMongoDB() {
